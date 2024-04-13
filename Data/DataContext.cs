@@ -10,6 +10,7 @@ namespace rpgapi.Data
         {
             
         }
-        public DbSet<Character> Characters => Set<Character>();
+        
+        public DbSet<Character> Characters { get; set; }
     }
 }

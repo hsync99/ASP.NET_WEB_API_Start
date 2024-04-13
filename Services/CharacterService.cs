@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using rpgapi.Data;
 using rpgapi.DTOS.Character;
 using rpgapi.Models;
 
@@ -11,9 +13,11 @@ namespace rpgapi.Services
     public class CharacterService : ICharacterService
     {
         private readonly IMapper _mapper;
-        public CharacterService(IMapper mapper)
+        private DataContext _context;
+        public CharacterService(IMapper mapper, DataContext context)
         {
             _mapper = mapper;   
+            _context = context;
         }
          private static List<Character> characters = new List<Character>{
             new Character(),
@@ -37,14 +41,28 @@ namespace rpgapi.Services
         public async Task<ServiceResponse< List<GetCharacterDto>>>GetAllCharacters()
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
-            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            List<Character> dbCharacters = new List<Character>();
+            try
+            {
+                 dbCharacters =  _context.Characters.ToList();
+                serviceResponse.Data = dbCharacters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = ex.Message;
+                serviceResponse.Success = false;
+            }
+            
+            
             return serviceResponse;
         }
 
         public async Task <ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
-            var character = characters.FirstOrDefault(c => c.Id == id) ?? new Character();
+            var dbCharacters = _context.Characters.ToList();
+            var character = dbCharacters.FirstOrDefault(c => c.Id == id) ?? new Character();
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
             return serviceResponse;
         }
