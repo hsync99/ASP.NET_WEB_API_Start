@@ -31,10 +31,13 @@ namespace rpgapi.Services
         public async Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter(AddCharacterDto newcharacter)
         {
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
-            var character = _mapper.Map<Character>(newcharacter);
-            character.Id = characters.Max(x => x.Id) + 1;   
-            characters.Add(character);
-            serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            var character = _mapper.Map<Character>(newcharacter);  
+            
+            _context.Characters.Add(character);
+            _context.SaveChanges();
+            //characters.Add(character);
+           
+            serviceResponse.Data = _context.Characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
             return serviceResponse;
         }
 
@@ -73,7 +76,8 @@ namespace rpgapi.Services
             try
             {
                
-                var character = characters.FirstOrDefault(c => c.Id == updatedcharacter.Id);
+                var character 
+                    = _context.Characters.FirstOrDefault(c => c.Id == updatedcharacter.Id);
                 if (character is null)
                 {
                     throw new Exception($"Characted with id '{updatedcharacter.Id}' not found");
@@ -87,6 +91,7 @@ namespace rpgapi.Services
                 character.Classs = updatedcharacter.Classs;
 
                 serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
+                _context.SaveChanges();
 
             }
             catch (Exception ex)
@@ -104,15 +109,16 @@ namespace rpgapi.Services
             try
             {
                 
-                var character = characters.First(c => c.Id == id);
+                var character = _context.Characters.First(c => c.Id == id);
                 if (character is null)
                 {
                     throw new Exception($"Characted with id '{id}' not found");
                 }
                 // _mapper.Map(updatedcharacter, character);
-                characters.Remove(character);
+                _context.Characters.Remove(character);
+                _context.SaveChanges();
 
-                serviceResponse.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+                serviceResponse.Data = _context.Characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
 
                 
             }

@@ -11,7 +11,7 @@ using rpgapi.Data;
 namespace rpgapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240413210751_InitialCreate")]
+    [Migration("20240414115358_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
