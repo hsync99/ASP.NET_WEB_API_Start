@@ -19,5 +19,6 @@ namespace rpgapi.Models
         public int Inteligence { get; set; } = 10;
 
          public RpgClass Classs { get; set; } = RpgClass.Knight;
+        public User? User { get; set; }
     }
 }

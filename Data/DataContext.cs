@@ -12,5 +12,6 @@ namespace rpgapi.Data
         }
         
         public DbSet<Character> Characters { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
